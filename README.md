@@ -1,5 +1,7 @@
 ## crates-mcp
 
+[![CI](https://github.com/terror/crates-mcp/actions/workflows/ci.yaml/badge.svg)](https://github.com/terror/crates-mcp/actions/workflows/ci.yaml)
+
 **crates-mcp** is a model context protocol server implementation for retrieving
 information about Rust crates.
 
