@@ -18,7 +18,7 @@ use {
     path::{Path, PathBuf},
     process,
   },
-  tracing::Level,
+  tracing::{Level, info, error},
   tracing_subscriber::{self, EnvFilter},
 };
 
@@ -99,8 +99,10 @@ async fn main() {
     .with_ansi(false)
     .init();
 
+  info!("Starting MCP server...");
+
   if let Err(error) = run().await {
-    eprintln!("error: {error}");
+    error!("error: {error}");
     process::exit(1);
   }
 }
