@@ -1,0 +1,11 @@
+[package]
+name = "crates-mcp"
+description = "A model context protocol server implementation for retrieving information about Rust crates"
+edition = "2024"
+version = "0.1.0"
+
+[dependencies]
+anyhow = "1.0.99"
+rmcp = { git = "https://github.com/modelcontextprotocol/rust-sdk", branch = "main", features = ["macros", "server", "transport-io"] }
+serde = { version = "1.0.225", features = ["derive"] }
+tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread"] }
