@@ -9,7 +9,7 @@ pub struct Lookup {
 impl Lookup {
   pub async fn run(self) -> Result {
     let documentation = lookup_crate(&self.name)?;
-    println!("{}", serde_yaml::to_string(&documentation)?);
+    println!("{}", serde_yaml::to_string(&documentation)?.trim());
     Ok(())
   }
 }

@@ -30,12 +30,11 @@ pub fn list_crates() -> Result<Vec<String>> {
     let path = entry.path();
 
     if path.is_dir() {
-      if let Some(crate_name) = path.file_name().and_then(|n| n.to_str()) {
-        if crate_name == "static.files" || crate_name.starts_with('.') {
-          continue;
+      match path.file_name().and_then(|n| n.to_str()) {
+        Some(crate_name) if !crate_name.contains('.') => {
+          crates.push(crate_name.to_string());
         }
-
-        crates.push(crate_name.to_string());
+        _ => continue,
       }
     }
   }
