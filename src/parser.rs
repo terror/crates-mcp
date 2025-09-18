@@ -136,7 +136,7 @@ fn parse_directory(dir: &Path) -> Result<Vec<Item>> {
     |mut acc, path| -> Result<Vec<Item>> {
       match (
         path.is_dir(),
-        path.extension().map_or(false, |ext| ext == "html"),
+        path.extension().is_some_and(|ext| ext == "html"),
       ) {
         (true, _) => acc.extend(parse_directory(&path)?),
         (false, true) => {
@@ -403,10 +403,10 @@ fn filter_by_query(items: Vec<Item>, query: &str) -> Vec<Item> {
         return true;
       }
 
-      if let Some(desc) = description {
-        if desc.to_lowercase().contains(&query_lower) {
-          return true;
-        }
+      if let Some(desc) = description
+        && desc.to_lowercase().contains(&query_lower)
+      {
+        return true;
       }
 
       false
