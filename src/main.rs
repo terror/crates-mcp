@@ -14,9 +14,12 @@ use {
   serde::{Deserialize, Serialize},
   std::{
     fs,
+    io::stderr,
     path::{Path, PathBuf},
     process,
   },
+  tracing::Level,
+  tracing_subscriber::{self, EnvFilter},
 };
 
 mod parser;
@@ -88,6 +91,14 @@ type Result<T = (), E = Error> = std::result::Result<T, E>;
 
 #[tokio::main]
 async fn main() {
+  tracing_subscriber::fmt()
+    .with_env_filter(
+      EnvFilter::from_default_env().add_directive(Level::DEBUG.into()),
+    )
+    .with_writer(stderr)
+    .with_ansi(false)
+    .init();
+
   if let Err(error) = run().await {
     eprintln!("error: {error}");
     process::exit(1);
