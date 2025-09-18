@@ -6,6 +6,7 @@ version = "0.1.0"
 
 [dependencies]
 anyhow = "1.0.99"
+clap = { version = "4.5.47", features = ["derive"] }
 regex = "1.11.2"
 rmcp = { git = "https://github.com/modelcontextprotocol/rust-sdk", branch = "main", features = ["server", "transport-io"] }
 scraper = "0.24.0"
