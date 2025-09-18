@@ -2,7 +2,7 @@ use {
   anyhow::{Error, anyhow, bail},
   arguments::Arguments,
   clap::Parser,
-  parser::{list_crates, lookup_crate_with_options},
+  parser::{list_crates, lookup_crate},
   regex::Regex,
   rmcp::{
     ErrorData as McpError, ServerHandler, ServiceExt,
@@ -12,7 +12,7 @@ use {
     tool, tool_handler, tool_router,
     transport::io::stdio,
   },
-  router::Router,
+  router::{LookupCrateRequest, Router},
   scraper::{Html, Selector},
   serde::{Deserialize, Serialize},
   std::{

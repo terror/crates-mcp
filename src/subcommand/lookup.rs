@@ -22,15 +22,21 @@ pub struct Lookup {
   query: Option<String>,
 }
 
+impl Into<LookupCrateRequest> for Lookup {
+  fn into(self) -> LookupCrateRequest {
+    LookupCrateRequest {
+      name: self.name,
+      limit: self.limit,
+      offset: self.offset,
+      item_type: self.item_type,
+      query: self.query,
+    }
+  }
+}
+
 impl Lookup {
   pub async fn run(self) -> Result {
-    let documentation = lookup_crate_with_options(
-      &self.name,
-      self.limit,
-      self.offset,
-      self.item_type,
-      self.query,
-    )?;
+    let documentation = lookup_crate(&self.into())?;
     println!("{}", serde_json::to_string(&documentation)?.trim());
     Ok(())
   }

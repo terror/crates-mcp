@@ -6,23 +6,23 @@ pub struct ListCratesRequest {}
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct LookupCrateRequest {
   #[schemars(description = "The name of the Rust crate")]
-  name: String,
+  pub name: String,
   #[schemars(
     description = "Maximum number of items to return (default: no limit)"
   )]
-  limit: Option<usize>,
+  pub limit: Option<usize>,
   #[schemars(
     description = "Number of items to skip for pagination (default: 0)"
   )]
-  offset: Option<usize>,
+  pub offset: Option<usize>,
   #[schemars(
     description = "Filter by item type: function, struct, enum, trait, macro, type, constant, module"
   )]
-  item_type: Option<String>,
+  pub item_type: Option<String>,
   #[schemars(
     description = "Search term to filter items by name or description"
   )]
-  query: Option<String>,
+  pub query: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -74,15 +74,9 @@ impl Router {
   #[tool(description = "Lookup information about a specific Rust crate")]
   fn lookup_crate(
     &self,
-    Parameters(LookupCrateRequest {
-      name,
-      limit,
-      offset,
-      item_type,
-      query,
-    }): Parameters<LookupCrateRequest>,
+    Parameters(parameters): Parameters<LookupCrateRequest>,
   ) -> Result<CallToolResult, McpError> {
-    match lookup_crate_with_options(&name, limit, offset, item_type, query) {
+    match lookup_crate(&parameters) {
       Ok(documentation) => match serde_json::to_string(&documentation) {
         Ok(yaml_content) => {
           Ok(CallToolResult::success(vec![Content::text(yaml_content)]))
@@ -94,7 +88,7 @@ impl Router {
       },
       Err(error) => Ok(CallToolResult::error(vec![Content::text(format!(
         "failed to lookup crate '{}': {}",
-        name, error
+        parameters.name, error
       ))])),
     }
   }

@@ -87,30 +87,28 @@ pub fn list_crates() -> Result<Vec<String>> {
   Ok(crates)
 }
 
-pub fn lookup_crate_with_options(
-  name: &str,
-  limit: Option<usize>,
-  offset: Option<usize>,
-  item_type: Option<String>,
-  query: Option<String>,
-) -> Result<Documentation> {
-  let path = PathBuf::from(DOC_PATH).join(name);
+pub fn lookup_crate(request: &LookupCrateRequest) -> Result<Documentation> {
+  let path = PathBuf::from(DOC_PATH).join(request.name.clone());
 
   if !path.exists() {
-    bail!("documentation not found for crate '{}' at {:?}", name, path);
+    bail!(
+      "documentation not found for crate '{}' at {:?}",
+      request.name,
+      path
+    );
   }
 
   let mut items = parse_directory(&path)?;
 
-  if let Some(ref filter_type) = item_type {
+  if let Some(ref filter_type) = request.item_type {
     items = filter_by_item_type(items, filter_type);
   }
 
-  if let Some(ref search_query) = query {
+  if let Some(ref search_query) = request.query {
     items = filter_by_query(items, search_query);
   }
 
-  let offset = offset.unwrap_or(0);
+  let offset = request.offset.unwrap_or(0);
 
   if offset > 0 && offset < items.len() {
     items = items.into_iter().skip(offset).collect();
@@ -118,12 +116,12 @@ pub fn lookup_crate_with_options(
     items = Vec::new();
   }
 
-  if let Some(limit) = limit {
+  if let Some(limit) = request.limit {
     items.truncate(limit);
   }
 
   Ok(Documentation {
-    name: name.to_string(),
+    name: request.name.to_string(),
     items,
   })
 }
