@@ -43,15 +43,37 @@ impl Router {
   fn list_crates(
     &self,
     Parameters(ListCratesRequest {}): Parameters<ListCratesRequest>,
-  ) -> String {
-    list_crates().unwrap().join("\n")
+  ) -> Result<CallToolResult, McpError> {
+    match list_crates() {
+      Ok(crates) => Ok(CallToolResult::success(vec![Content::text(
+        crates.join("\n"),
+      )])),
+      Err(error) => Ok(CallToolResult::error(vec![Content::text(format!(
+        "failed to list crates: {}",
+        error
+      ))])),
+    }
   }
 
   #[tool(description = "Lookup information about a specific Rust crate")]
   fn lookup_crate(
     &self,
     Parameters(LookupCrateRequest { name }): Parameters<LookupCrateRequest>,
-  ) -> String {
-    serde_yaml::to_string(&lookup_crate(&name).unwrap()).unwrap()
+  ) -> Result<CallToolResult, McpError> {
+    match lookup_crate(&name) {
+      Ok(documentation) => match serde_yaml::to_string(&documentation) {
+        Ok(yaml_content) => {
+          Ok(CallToolResult::success(vec![Content::text(yaml_content)]))
+        }
+        Err(error) => Ok(CallToolResult::error(vec![Content::text(format!(
+          "failed to serialize documentation: {}",
+          error
+        ))])),
+      },
+      Err(error) => Ok(CallToolResult::error(vec![Content::text(format!(
+        "failed to lookup crate '{}': {}",
+        name, error
+      ))])),
+    }
   }
 }

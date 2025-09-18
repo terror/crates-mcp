@@ -5,9 +5,9 @@ use {
   parser::{list_crates, lookup_crate},
   regex::Regex,
   rmcp::{
-    ServerHandler, ServiceExt,
+    ErrorData as McpError, ServerHandler, ServiceExt,
     handler::server::{router::tool::ToolRouter, wrapper::Parameters},
-    model::{ServerCapabilities, ServerInfo},
+    model::{CallToolResult, Content, ServerCapabilities, ServerInfo},
     schemars::{self, JsonSchema},
     tool, tool_handler, tool_router,
     transport::io::stdio,
