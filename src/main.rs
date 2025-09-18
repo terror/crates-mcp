@@ -2,7 +2,7 @@ use {
   anyhow::{Error, anyhow, bail},
   arguments::Arguments,
   clap::Parser,
-  parser::{list_crates, lookup_crate},
+  parser::{list_crates, lookup_crate_with_options},
   regex::Regex,
   rmcp::{
     ErrorData as McpError, ServerHandler, ServiceExt,
