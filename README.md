@@ -9,8 +9,7 @@ information about Rust crates.
   <img width="800" height="800" alt="Screenshot 2025-09-18 at 10 42 39 PM" src="https://github.com/user-attachments/assets/dc02c345-4205-48fa-b738-c76a3a7a2646" />
 </div>
 
-It exposes three tools, namely `list_crates`, `lookup_crate` and
-`generate_docs`.
+It exposes three tools, namely `generate_docs`, `list_crates`, and `lookup_crate`.
 
 ### `generate_docs`
 
