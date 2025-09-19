@@ -1,12 +1,6 @@
 use super::*;
 
-const DOC_PATH: &str = "target/doc";
-
-pub fn list_crates() -> Result<Vec<String>> {
-  list_crates_in_path(DOC_PATH)
-}
-
-fn list_crates_in_path(path: &str) -> Result<Vec<String>> {
+pub fn list_crates_in_path(path: &str) -> Result<Vec<String>> {
   let path = PathBuf::from(path);
 
   if !path.exists() {
@@ -31,11 +25,7 @@ fn list_crates_in_path(path: &str) -> Result<Vec<String>> {
   Ok(crates)
 }
 
-pub fn lookup_crate(request: &LookupCrateRequest) -> Result<Documentation> {
-  lookup_crate_in_path(request, DOC_PATH)
-}
-
-fn lookup_crate_in_path(
+pub fn lookup_crate_in_path(
   request: &LookupCrateRequest,
   doc_path: &str,
 ) -> Result<Documentation> {

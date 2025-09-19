@@ -1,5 +1,7 @@
 use super::*;
 
+const DOC_PATH: &str = "target/doc";
+
 pub fn generate_docs(request: &GenerateDocsRequest) -> Result<String> {
   let mut cmd = Command::new("cargo");
 
@@ -45,4 +47,12 @@ pub fn generate_docs(request: &GenerateDocsRequest) -> Result<String> {
   }
 
   Ok(result)
+}
+
+pub fn list_crates() -> Result<Vec<String>> {
+  list_crates_in_path(DOC_PATH)
+}
+
+pub fn lookup_crate(request: &LookupCrateRequest) -> Result<Documentation> {
+  lookup_crate_in_path(request, DOC_PATH)
 }
