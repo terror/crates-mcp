@@ -1,5 +1,7 @@
 use super::*;
 
+const DOC_PATH: &str = "target/doc";
+
 #[derive(Debug, Parser)]
 pub struct Lookup {
   #[clap(short, long)]
@@ -36,7 +38,7 @@ impl From<Lookup> for LookupCrateRequest {
 
 impl Lookup {
   pub async fn run(self) -> Result {
-    let documentation = lookup_crate(&self.into())?;
+    let documentation = lookup_crate(&self.into(), DOC_PATH)?;
     println!("{}", serde_json::to_string(&documentation)?.trim());
     Ok(())
   }

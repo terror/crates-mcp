@@ -1,13 +1,13 @@
 use {
-  anyhow::{Error, anyhow, bail},
+  anyhow::anyhow,
   arguments::Arguments,
   clap::Parser,
   documentation::Documentation,
-  handler::{generate_docs, list_crates, lookup_crate},
+  error::Error,
   item::Item,
   item_kind::ItemKind,
   method::Method,
-  parser::{list_crates_in_path, lookup_crate_in_path},
+  parser::{list_crates, lookup_crate},
   regex::Regex,
   rmcp::{
     ErrorData as McpError, ServerHandler, ServiceExt,
@@ -17,10 +17,11 @@ use {
     tool, tool_handler, tool_router,
     transport::io::stdio,
   },
-  router::{GenerateDocsRequest, LookupCrateRequest, Router},
+  router::{LookupCrateRequest, Router},
   scraper::{Html, Selector},
   serde::{Deserialize, Serialize},
   std::{
+    fmt::{self, Display, Formatter},
     fs,
     io::stderr,
     path::{Path, PathBuf},
@@ -33,7 +34,7 @@ use {
 
 mod arguments;
 mod documentation;
-mod handler;
+mod error;
 mod item;
 mod item_kind;
 mod method;

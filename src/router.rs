@@ -1,5 +1,7 @@
 use super::*;
 
+const DOC_PATH: &str = "target/doc";
+
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct GenerateDocsRequest {
   #[schemars(
@@ -68,13 +70,31 @@ impl Router {
     &self,
     Parameters(parameters): Parameters<GenerateDocsRequest>,
   ) -> Result<CallToolResult, McpError> {
-    match generate_docs(&parameters) {
-      Ok(output) => Ok(CallToolResult::success(vec![Content::text(output)])),
-      Err(error) => Ok(CallToolResult::error(vec![Content::text(format!(
-        "failed to generate docs: {}",
-        error
-      ))])),
+    match self.generate_docs_impl(&parameters) {
+      Ok(result) => Ok(CallToolResult::success(vec![Content::text(result)])),
+      Err(error) => Err(error.into()),
     }
+  }
+
+  fn generate_docs_impl(
+    &self,
+    parameters: &GenerateDocsRequest,
+  ) -> Result<String, Error> {
+    let output = Command::new("cargo")
+      .arg("doc")
+      .args(parameters.flags.as_deref().unwrap_or(&[]))
+      .output()
+      .map_err(|error| anyhow!("failed to run cargo doc: {}", error))?;
+
+    let stderr = String::from_utf8_lossy(&output.stderr);
+
+    if !output.status.success() {
+      return Err(anyhow!("cargo doc failed: {}", stderr).into());
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+
+    Ok(format!("{}{}", stdout, stderr))
   }
 
   #[tool(description = "List all available Rust crates")]
@@ -82,14 +102,11 @@ impl Router {
     &self,
     Parameters(ListCratesRequest {}): Parameters<ListCratesRequest>,
   ) -> Result<CallToolResult, McpError> {
-    match list_crates() {
+    match list_crates(DOC_PATH) {
       Ok(crates) => Ok(CallToolResult::success(vec![Content::text(
         crates.join("\n"),
       )])),
-      Err(error) => Ok(CallToolResult::error(vec![Content::text(format!(
-        "failed to list crates: {}",
-        error
-      ))])),
+      Err(error) => Err(error.into()),
     }
   }
 
@@ -98,20 +115,16 @@ impl Router {
     &self,
     Parameters(parameters): Parameters<LookupCrateRequest>,
   ) -> Result<CallToolResult, McpError> {
-    match lookup_crate(&parameters) {
-      Ok(documentation) => match serde_json::to_string(&documentation) {
-        Ok(content) => {
-          Ok(CallToolResult::success(vec![Content::text(content)]))
-        }
-        Err(error) => Ok(CallToolResult::error(vec![Content::text(format!(
-          "failed to serialize documentation: {}",
-          error
-        ))])),
-      },
-      Err(error) => Ok(CallToolResult::error(vec![Content::text(format!(
-        "failed to lookup crate '{}': {}",
-        parameters.name, error
-      ))])),
+    match self.lookup_crate_impl(&parameters) {
+      Ok(content) => Ok(CallToolResult::success(vec![Content::text(content)])),
+      Err(error) => Err(error.into()),
     }
+  }
+
+  fn lookup_crate_impl(
+    &self,
+    parameters: &LookupCrateRequest,
+  ) -> Result<String> {
+    Ok(serde_json::to_string(&lookup_crate(parameters, DOC_PATH)?)?)
   }
 }

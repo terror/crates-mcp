@@ -1,10 +1,13 @@
 use super::*;
 
-pub fn list_crates_in_path(path: &str) -> Result<Vec<String>> {
+pub fn list_crates(path: &str) -> Result<Vec<String>> {
   let path = PathBuf::from(path);
 
   if !path.exists() {
-    bail!("documentation directory not found at {:?}", path);
+    return Err(Error(anyhow!(
+      "documentation directory not found at {:?}",
+      path
+    )));
   }
 
   let mut crates = fs::read_dir(&path)?
@@ -25,21 +28,21 @@ pub fn list_crates_in_path(path: &str) -> Result<Vec<String>> {
   Ok(crates)
 }
 
-pub fn lookup_crate_in_path(
+pub fn lookup_crate(
   request: &LookupCrateRequest,
-  doc_path: &str,
+  path: &str,
 ) -> Result<Documentation> {
-  let path = PathBuf::from(doc_path).join(request.name.clone());
+  let path = PathBuf::from(path).join(request.name.clone());
 
   if !path.exists() {
-    bail!(
+    return Err(Error(anyhow!(
       "documentation not found for crate '{}' at {:?}",
       request.name,
       path
-    );
+    )));
   }
 
-  let mut items = parse_directory(&path).unwrap();
+  let mut items = parse_directory(&path)?;
 
   if let Some(ref filter_type) = request.item_type {
     items = filter_by_item_type(items, filter_type);
@@ -169,11 +172,11 @@ fn parse_html_file(file_path: &Path) -> Result<Option<Item>> {
 fn extract_item_name(file_name: &str) -> Result<String> {
   file_name
     .find('.')
-    .ok_or_else(|| anyhow!("invalid file name format"))
+    .ok_or_else(|| Error(anyhow!("invalid file name format")))
     .and_then(|dot_pos| {
       file_name[dot_pos + 1..]
         .strip_suffix(".html")
-        .ok_or_else(|| anyhow!("file name doesn't end with .html"))
+        .ok_or_else(|| Error(anyhow!("file name doesn't end with .html")))
         .map(|name| name.to_string())
     })
 }
@@ -455,7 +458,7 @@ mod tests {
     fs::create_dir_all(temp_dir.path().join("target/doc/static.files"))
       .unwrap();
 
-    let crates = list_crates_in_path(&doc_path).unwrap();
+    let crates = super::list_crates(&doc_path).unwrap();
 
     assert_eq!(crates, vec!["crate", "crate_a", "crate_b", "crate_c"]);
   }
@@ -484,7 +487,7 @@ mod tests {
       offset: None,
     };
 
-    let result = lookup_crate_in_path(&request, &doc_path).unwrap();
+    let result = lookup_crate(&request, &doc_path).unwrap();
 
     assert_eq!(
       result.items,
@@ -534,7 +537,7 @@ mod tests {
       offset: None,
     };
 
-    let result = lookup_crate_in_path(&request, &doc_path).unwrap();
+    let result = lookup_crate(&request, &doc_path).unwrap();
 
     assert_eq!(
       result.items,
@@ -585,7 +588,7 @@ mod tests {
       offset: None,
     };
 
-    let result = lookup_crate_in_path(&request, &doc_path).unwrap();
+    let result = lookup_crate(&request, &doc_path).unwrap();
 
     assert_eq!(
       result.items,
@@ -623,7 +626,7 @@ mod tests {
       offset: None,
     };
 
-    let result = lookup_crate_in_path(&request, &doc_path).unwrap();
+    let result = lookup_crate(&request, &doc_path).unwrap();
 
     assert_eq!(
       result.items,
@@ -659,7 +662,7 @@ mod tests {
       offset: None,
     };
 
-    let result = lookup_crate_in_path(&request, &doc_path).unwrap();
+    let result = lookup_crate(&request, &doc_path).unwrap();
 
     assert_eq!(
       result.items,
@@ -702,7 +705,7 @@ mod tests {
       offset: None,
     };
 
-    let result = lookup_crate_in_path(&request, &doc_path).unwrap();
+    let result = lookup_crate(&request, &doc_path).unwrap();
 
     assert_eq!(
       result.items,
@@ -744,7 +747,7 @@ mod tests {
       offset: Some(1),
     };
 
-    let result = lookup_crate_in_path(&request, &doc_path).unwrap();
+    let result = lookup_crate(&request, &doc_path).unwrap();
 
     assert_eq!(result.items.len(), 2);
   }
@@ -839,7 +842,7 @@ mod tests {
       offset: None,
     };
 
-    let result = lookup_crate_in_path(&request, &doc_path).unwrap();
+    let result = lookup_crate(&request, &doc_path).unwrap();
 
     assert_eq!(
       result.items,
