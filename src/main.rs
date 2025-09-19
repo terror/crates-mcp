@@ -3,6 +3,7 @@ use {
   arguments::Arguments,
   clap::Parser,
   documentation::Documentation,
+  generate::generate_docs,
   item::Item,
   item_kind::ItemKind,
   method::Method,
@@ -16,14 +17,14 @@ use {
     tool, tool_handler, tool_router,
     transport::io::stdio,
   },
-  router::{LookupCrateRequest, Router},
+  router::{GenerateDocsRequest, LookupCrateRequest, Router},
   scraper::{Html, Selector},
   serde::{Deserialize, Serialize},
   std::{
     fs,
     io::stderr,
     path::{Path, PathBuf},
-    process,
+    process::{self, Command},
   },
   subcommand::Subcommand,
   tracing::{error, info},
@@ -32,6 +33,7 @@ use {
 
 mod arguments;
 mod documentation;
+mod generate;
 mod item;
 mod item_kind;
 mod method;

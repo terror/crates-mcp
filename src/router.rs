@@ -1,6 +1,14 @@
 use super::*;
 
 #[derive(Debug, Deserialize, JsonSchema)]
+pub struct GenerateDocsRequest {
+  #[schemars(
+    description = "Additional cargo doc flags (e.g., '--no-deps', '--open')"
+  )]
+  pub flags: Option<Vec<String>>,
+}
+
+#[derive(Debug, Deserialize, JsonSchema)]
 pub struct ListCratesRequest {}
 
 #[derive(Debug, Deserialize, JsonSchema)]
@@ -52,6 +60,20 @@ impl Router {
   pub fn new() -> Self {
     Self {
       tool_router: Self::tool_router(),
+    }
+  }
+
+  #[tool(description = "Generate documentation using 'cargo doc'")]
+  fn generate_docs(
+    &self,
+    Parameters(parameters): Parameters<GenerateDocsRequest>,
+  ) -> Result<CallToolResult, McpError> {
+    match generate_docs(&parameters) {
+      Ok(output) => Ok(CallToolResult::success(vec![Content::text(output)])),
+      Err(error) => Ok(CallToolResult::error(vec![Content::text(format!(
+        "failed to generate docs: {}",
+        error
+      ))])),
     }
   }
 
