@@ -5,6 +5,10 @@
 **crates-mcp** is a model context protocol server implementation for retrieving
 information about Rust crates.
 
+<div align="center">
+  <img width="800" height="800" alt="Screenshot 2025-09-18 at 10 42 39 PM" src="https://github.com/user-attachments/assets/dc02c345-4205-48fa-b738-c76a3a7a2646" />
+</div>
+
 It exposes three tools, namely `list_crates`, `lookup_crate` and
 `generate_docs`.
 
@@ -46,7 +50,7 @@ binary as input to clients:
 git clone https://github.com/terror/crates-mcp
 cd crates-mcp
 cargo build --release
-claude mcp add crates /absolute/path/to/crates-mcp/binary
+claude mcp add crates /absolute/path/to/crates-mcp/target/release/crates-mcp
 ```
 
 ## Prior Art
