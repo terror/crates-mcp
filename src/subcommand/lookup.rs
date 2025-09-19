@@ -22,14 +22,14 @@ pub struct Lookup {
   query: Option<String>,
 }
 
-impl Into<LookupCrateRequest> for Lookup {
-  fn into(self) -> LookupCrateRequest {
+impl From<Lookup> for LookupCrateRequest {
+  fn from(value: Lookup) -> Self {
     LookupCrateRequest {
-      name: self.name,
-      limit: self.limit,
-      offset: self.offset,
-      item_type: self.item_type,
-      query: self.query,
+      name: value.name,
+      limit: value.limit,
+      offset: value.offset,
+      item_type: value.item_type,
+      query: value.query,
     }
   }
 }
