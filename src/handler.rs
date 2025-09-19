@@ -3,19 +3,11 @@ use super::*;
 const DOC_PATH: &str = "target/doc";
 
 pub fn generate_docs(request: &GenerateDocsRequest) -> Result<String> {
-  let mut cmd = Command::new("cargo");
-
-  cmd.arg("doc");
-
-  if let Some(ref flags) = request.flags {
-    for flag in flags {
-      cmd.arg(flag);
-    }
-  }
-
-  let output = cmd
+  let output = Command::new("cargo")
+    .arg("doc")
+    .args(request.flags.as_deref().unwrap_or(&[]))
     .output()
-    .map_err(|e| anyhow!("failed to run cargo doc: {}", e))?;
+    .map_err(|error| anyhow!("failed to run cargo doc: {}", error))?;
 
   let stderr = String::from_utf8_lossy(&output.stderr);
 
@@ -25,28 +17,7 @@ pub fn generate_docs(request: &GenerateDocsRequest) -> Result<String> {
 
   let stdout = String::from_utf8_lossy(&output.stdout);
 
-  let mut result = String::new();
-
-  if !stdout.is_empty() {
-    result.push_str("STDOUT:\n");
-    result.push_str(&stdout);
-  }
-
-  if !stderr.is_empty() {
-    if !result.is_empty() {
-      result.push_str("\n\n");
-    }
-
-    result.push_str("STDERR:\n");
-
-    result.push_str(&stderr);
-  }
-
-  if result.is_empty() {
-    result = "Documentation generated successfully.".to_string();
-  }
-
-  Ok(result)
+  Ok(format!("{}{}", stdout, stderr))
 }
 
 pub fn list_crates() -> Result<Vec<String>> {
