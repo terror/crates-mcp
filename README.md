@@ -5,6 +5,9 @@
 **crates-mcp** is a model context protocol server implementation for retrieving
 information about Rust crates.
 
+It exposes three tools, namely `list_crates`, `lookup_crate` and
+`generate_docs`.
+
 ## Installation
 
 ```

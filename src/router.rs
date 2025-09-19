@@ -100,8 +100,8 @@ impl Router {
   ) -> Result<CallToolResult, McpError> {
     match lookup_crate(&parameters) {
       Ok(documentation) => match serde_json::to_string(&documentation) {
-        Ok(yaml_content) => {
-          Ok(CallToolResult::success(vec![Content::text(yaml_content)]))
+        Ok(content) => {
+          Ok(CallToolResult::success(vec![Content::text(content)]))
         }
         Err(error) => Ok(CallToolResult::error(vec![Content::text(format!(
           "failed to serialize documentation: {}",
