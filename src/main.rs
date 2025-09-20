@@ -40,6 +40,8 @@ mod parser;
 mod router;
 mod subcommand;
 
+const DOC_PATH: &str = "target/doc";
+
 type Result<T = (), E = Error> = std::result::Result<T, E>;
 
 #[tokio::main]

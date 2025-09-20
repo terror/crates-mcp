@@ -1,7 +1,5 @@
 use super::*;
 
-const DOC_PATH: &str = "target/doc";
-
 #[derive(Debug, Parser)]
 pub struct Lookup {
   #[clap(short, long)]

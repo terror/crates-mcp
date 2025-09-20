@@ -1,7 +1,5 @@
 use super::*;
 
-const DOC_PATH: &str = "target/doc";
-
 #[derive(Debug, Deserialize, JsonSchema)]
 pub struct GenerateDocsRequest {
   #[schemars(
