@@ -6,7 +6,6 @@ use {
   error::Error,
   item::Item,
   item_kind::ItemKind,
-  method::Method,
   parser::{list_crates, lookup_crate},
   regex::Regex,
   rmcp::{
@@ -37,7 +36,6 @@ mod documentation;
 mod error;
 mod item;
 mod item_kind;
-mod method;
 mod parser;
 mod router;
 mod subcommand;

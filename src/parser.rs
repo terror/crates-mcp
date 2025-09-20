@@ -181,7 +181,7 @@ fn extract_item_name(file_name: &str) -> Result<String> {
     })
 }
 
-fn extract_method_structs(document: &Html) -> Vec<Method> {
+fn extract_method_structs(document: &Html) -> Vec<Item> {
   document
     .select(&Selector::parse("div.impl-items .method").unwrap())
     .filter_map(|method_element| {
@@ -205,7 +205,7 @@ fn extract_method_structs(document: &Html) -> Vec<Method> {
         .filter(|text| !text.trim().is_empty())
         .map(|text| text.trim().to_string());
 
-      Some(Method {
+      Some(Item::Function {
         name,
         signature,
         description,
@@ -546,12 +546,12 @@ mod tests {
         signature: "pub struct MyStruct { value: i32 }".to_string(),
         description: Some("A simple struct with a value.".to_string()),
         methods: vec![
-          Method {
+          Item::Function {
             name: "new".to_string(),
             signature: "fn new() -> Self".to_string(),
             description: Some("Creates a new instance.".to_string()),
           },
-          Method {
+          Item::Function {
             name: "get_value".to_string(),
             signature: "fn get_value(&self) -> i32".to_string(),
             description: None,

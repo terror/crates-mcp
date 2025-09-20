@@ -11,7 +11,7 @@ pub enum Item {
     name: String,
     signature: String,
     description: Option<String>,
-    methods: Vec<Method>,
+    methods: Vec<Item>,
   },
   Enum {
     name: String,
@@ -23,7 +23,7 @@ pub enum Item {
     name: String,
     signature: String,
     description: Option<String>,
-    methods: Vec<Method>,
+    methods: Vec<Item>,
   },
   Macro {
     name: String,
