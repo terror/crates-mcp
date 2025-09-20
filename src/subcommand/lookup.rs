@@ -37,7 +37,7 @@ impl From<Lookup> for LookupCrateRequest {
 impl Lookup {
   pub async fn run(self) -> Result {
     let documentation = lookup_crate(&self.into(), DOC_PATH)?;
-    println!("{}", serde_json::to_string(&documentation)?.trim());
+    println!("{}", serde_json::to_string_pretty(&documentation)?.trim());
     Ok(())
   }
 }

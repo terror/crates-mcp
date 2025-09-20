@@ -127,7 +127,7 @@ fn parse_html_file(file_path: &Path) -> Result<Option<Item>> {
         name,
         signature,
         description,
-        methods: extract_method_structs(&document),
+        methods: extract_methods(&document),
       },
       ItemKind::Enum => Item::Enum {
         name,
@@ -139,7 +139,7 @@ fn parse_html_file(file_path: &Path) -> Result<Option<Item>> {
         name,
         signature,
         description,
-        methods: extract_method_structs(&document),
+        methods: extract_methods(&document),
       },
       ItemKind::Macro => Item::Macro {
         name,
@@ -181,14 +181,13 @@ fn extract_item_name(file_name: &str) -> Result<String> {
     })
 }
 
-fn extract_method_structs(document: &Html) -> Vec<Item> {
+fn extract_methods(document: &Html) -> Vec<Item> {
   document
-    .select(&Selector::parse("div.impl-items .method").unwrap())
+    .select(&Selector::parse(".method-toggle").unwrap())
     .filter_map(|method_element| {
       let signature_element = method_element
         .select(&Selector::parse(".code-header").unwrap())
-        .next()
-        .unwrap();
+        .next()?;
 
       let signature = html_to_text(signature_element.inner_html());
 
@@ -370,7 +369,7 @@ mod tests {
           .map(|d| format!(r#"<div class="docblock"><p>{}</p></div>"#, d))
           .unwrap_or_default();
         format!(
-          r#"<div class="method"><div class="code-header">{}</div>{}</div>"#,
+          r#"<div class="toggle method-toggle"><div class="code-header">{}</div>{}</div>"#,
           method_sig, method_desc_html
         )
       })
